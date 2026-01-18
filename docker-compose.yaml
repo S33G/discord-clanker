@@ -1,0 +1,70 @@
+version: "3.8"
+
+services:
+  # Discord bot
+  discord-prompter:
+    build: .
+    container_name: discord-prompter
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      # Discord token (required)
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      
+      # Redis password
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      
+      # Optional: LLM API keys
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+    volumes:
+      # Mount configuration (read-only)
+      - ./config/config.yaml:/app/config/config.yaml:ro
+    extra_hosts:
+      # Allow access to host machine (for local Ollama)
+      - "host.docker.internal:host-gateway"
+    networks:
+      - prompter
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis database
+  redis:
+    image: redis:7-alpine
+    container_name: redis-prompter
+    restart: unless-stopped
+    command: >
+      redis-server
+      /usr/local/etc/redis/redis.conf
+      --requirepass ${REDIS_PASSWORD}
+    volumes:
+      # Persistent data
+      - redis_data:/data
+      # Configuration
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - prompter
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  prompter:
+    name: prompter
+
+volumes:
+  redis_data:
+    name: prompter_redis_data
