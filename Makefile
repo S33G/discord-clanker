@@ -46,7 +46,7 @@ docker:
 # Start services
 up:
 	@echo "Starting services..."
-	@docker-compose up -d
+	@docker compose up -d
 	@echo "Services started. Use 'make logs' to view logs."
 
 # Stop services
