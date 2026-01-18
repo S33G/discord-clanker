@@ -186,3 +186,8 @@ func (g *GuildConfig) GetSystemPromptByName(name string) (string, error) {
 	}
 	return "", fmt.Errorf("system prompt '%s' not found", name)
 }
+
+// GetAutoArchiveDuration returns the thread auto archive duration in minutes
+func (g *GuildConfig) GetAutoArchiveDuration(defaults DefaultsConfig) int {
+	return defaults.ThreadAutoArchiveMinutes
+}
