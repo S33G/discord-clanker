@@ -2,7 +2,7 @@
 
 # Default target
 help:
-	@echo "Discord Prompter - Available targets:"
+	@echo "Discord Clanker - Available targets:"
 	@echo "  make build      - Build the bot binary"
 	@echo "  make run        - Run the bot locally"
 	@echo "  make test       - Run tests"

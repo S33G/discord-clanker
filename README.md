@@ -1,4 +1,4 @@
-# Discord Prompter
+# Discord Clanker
 
 A feature-rich Discord bot for interacting with LLMs (Large Language Models) through thread-based conversations. Supports any OpenAI-compatible API including Ollama, OpenAI, OpenRouter, and more.
 
