@@ -6,6 +6,10 @@ import (
 )
 
 func TestLoad(t *testing.T) {
+	// Set environment variable for test
+	os.Setenv("DISCORD_TOKEN", "test-token-123")
+	defer os.Unsetenv("DISCORD_TOKEN")
+
 	// Create a temporary config file
 	content := `
 redis:
