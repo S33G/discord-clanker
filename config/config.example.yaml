@@ -1,0 +1,177 @@
+# Discord Prompter Configuration Example
+# Copy this to config.yaml and customize for your setup
+
+redis:
+  address: "redis:6379"  # Use "localhost:6379" for local development
+  password_env: REDIS_PASSWORD
+  db: 0
+  key_prefix: "prompter:"
+
+defaults:
+  max_context_tokens: 4096
+  conversation_ttl_hours: 168  # 7 days
+  usage_retention_days: 90     # 3 months
+  message_history_limit: 50
+  thread_auto_archive_minutes: 60
+
+# LLM Provider configurations
+providers:
+  - name: ollama-local
+    base_url: http://host.docker.internal:11434/v1  # Use localhost:11434 for local dev
+    api_key_env: ""  # Empty for no auth (Ollama default)
+    default_max_tokens: 2048
+    models:
+      - id: llama3.2
+        display_name: "Llama 3.2"
+        context_window: 8192
+      - id: codellama
+        display_name: "Code Llama"
+        context_window: 16384
+      - id: deepseek-coder
+        display_name: "DeepSeek Coder"
+        context_window: 16384
+
+  - name: openai
+    base_url: https://api.openai.com/v1
+    api_key_env: OPENAI_API_KEY
+    default_max_tokens: 2048
+    models:
+      - id: gpt-4o
+        display_name: "GPT-4o"
+        context_window: 128000
+      - id: gpt-4o-mini
+        display_name: "GPT-4o Mini"
+        context_window: 128000
+
+  - name: openrouter
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
+    default_max_tokens: 2048
+    models:
+      - id: anthropic/claude-3.5-sonnet
+        display_name: "Claude 3.5 Sonnet"
+        context_window: 200000
+
+# Per-guild configuration
+guilds:
+  - id: "YOUR_GUILD_ID_HERE"  # Replace with your Discord server's Guild ID
+    name: "My Discord Server"
+    
+    # Which models are available in this guild
+    enabled_models:
+      - ollama-local/llama3.2
+      - ollama-local/codellama
+      - openai/gpt-4o-mini
+    
+    default_model: ollama-local/llama3.2
+    default_system_prompt: default
+    
+    # Optional: Override defaults for this guild
+    # max_context_tokens: 8192
+    # conversation_ttl_hours: 48
+    # usage_retention_days: 30
+    
+    # System prompts
+    system_prompts:
+      - name: default
+        content: "You are a helpful assistant. Be clear, concise, and accurate."
+        default: true
+      
+      - name: coder
+        content: |
+          You are an expert programmer. Provide clear, concise code examples.
+          Always explain your reasoning and use markdown code blocks with language hints.
+          Focus on best practices, security, and maintainability.
+      
+      - name: creative
+        content: "You are a creative writing assistant with a flair for storytelling."
+    
+    # Role-based access control
+    rbac:
+      roles:
+        # Admins have full access
+        - discord_role: "Admin"
+          permissions:
+            - manage_prompts
+            - manage_models
+            - unlimited_rate
+            - unlimited_tokens
+            - view_all_usage
+            - reload_config
+          allowed_models: ["*"]  # All models
+        
+        # Sponsors get unlimited tokens
+        - discord_role: "Sponsor"
+          permissions:
+            - use_models
+            - unlimited_tokens
+          allowed_models: ["*"]
+        
+        # Pro members get higher limits and more models
+        - discord_role: "Pro Member"
+          permissions:
+            - use_models
+          allowed_models:
+            - ollama-local/*        # All Ollama models
+            - openai/gpt-4o-mini    # Specific OpenAI model
+        
+        # Regular members get basic access
+        - discord_role: "Member"
+          permissions:
+            - use_models
+          allowed_models:
+            - ollama-local/llama3.2  # Only default model
+        
+        # Everyone else has no access
+        - discord_role: "@everyone"
+          permissions: []
+          allowed_models: []
+    
+    # Request rate limits
+    rate_limits:
+      default:
+        requests_per_minute: 5
+        requests_per_hour: 50
+      
+      roles:
+        Admin:
+          requests_per_minute: 0  # 0 = unlimited
+          requests_per_hour: 0
+        
+        Sponsor:
+          requests_per_minute: 0
+          requests_per_hour: 0
+        
+        "Pro Member":
+          requests_per_minute: 20
+          requests_per_hour: 200
+        
+        Member:
+          requests_per_minute: 10
+          requests_per_hour: 100
+    
+    # Token usage limits
+    token_limits:
+      default:
+        tokens_per_period: 25000
+        period_hours: 24  # Daily reset
+      
+      roles:
+        Admin:
+          bypass: true  # Unlimited
+        
+        Sponsor:
+          bypass: true
+        
+        "Pro Member":
+          tokens_per_period: 100000
+          period_hours: 24
+        
+        Member:
+          tokens_per_period: 25000
+          period_hours: 24
+
+# Logging configuration
+logging:
+  level: info    # debug, info, warn, error
+  format: json   # json or text
