@@ -4,15 +4,15 @@ A feature-rich Discord bot for interacting with LLMs (Large Language Models) thr
 
 ## Features
 
-✨ **Thread-Based Conversations** - Each `/ask` command creates a dedicated thread with full context
-🤖 **Multi-Provider Support** - Works with Ollama, OpenAI, Claude, and any OpenAI-compatible API
-🎯 **Smart Context Management** - Automatic token counting and context window management
-🔐 **Role-Based Access Control** - Discord role-based permissions and model access
-⚡ **Rate Limiting** - Configurable request and token limits per role
-💾 **Redis-Backed** - Fast, persistent storage with automatic TTL
-🔄 **Hot-Reload** - Update configuration without restarting
-🎨 **Interactive Buttons** - Regenerate, copy, clear context, change settings
-📊 **Usage Tracking** - Monitor token usage with configurable retention
+- **Thread-Based Conversations** - Each `/ask` command creates a dedicated thread with full context
+- **Multi-Provider Support** - Works with Ollama, OpenAI, Claude, and any OpenAI-compatible API
+- **Smart Context Management** - Automatic token counting and context window management
+- **Role-Based Access Control** - Discord role-based permissions and model access
+- **Rate Limiting** - Configurable request and token limits per role
+- **Redis-Backed** - Fast, persistent storage with automatic TTL
+- **Hot-Reload** - Update configuration without restarting
+- **Interactive Buttons** - Regenerate, copy, clear context, change settings
+- **Usage Tracking** - Monitor token usage with configurable retention
 
 ## Quick Start
 
